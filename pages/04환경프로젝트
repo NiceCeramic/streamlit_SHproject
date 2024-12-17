@@ -1,6 +1,7 @@
 import streamlit as st
 from PIL import Image
 import os
+import json
 
 # 앱 제목
 st.title("환경 탐험 챗봇 🌍")
@@ -28,9 +29,12 @@ quiz_question = "플라스틱 쓰레기를 줄이는 가장 좋은 방법은 무
 quiz_options = ["플라스틱 제품 사용 줄이기", "분리수거 안 하기", "플라스틱 더 많이 사용하기"]
 answer = st.radio("선택하세요:", quiz_options)
 
+badge = None  # 배지를 초기화
+
 if st.button("제출"):
     if answer == "플라스틱 제품 사용 줄이기":
         st.success("정답이에요! 플라스틱 사용을 줄이는 게 가장 중요해요.")
+        badge = "badge_correct.png"  # 퀴즈를 맞췄을 때 배지 이미지
     else:
         st.error("다시 생각해보세요. 플라스틱을 줄이는 방법이 중요해요!")
 
@@ -43,9 +47,27 @@ st.subheader("나의 환경 활동 공유하기 📸")
 
 # 업로드 폴더 설정
 UPLOAD_FOLDER = "uploads"
+COMMENTS_FILE = "comments.json"  # 댓글 저장 파일
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
+# 댓글을 저장하는 함수
+def save_comment(photo_name, comment):
+    if os.path.exists(COMMENTS_FILE):
+        with open(COMMENTS_FILE, "r") as f:
+            comments = json.load(f)
+    else:
+        comments = {}
+
+    if photo_name not in comments:
+        comments[photo_name] = []
+    
+    comments[photo_name].append(comment)
+    
+    with open(COMMENTS_FILE, "w") as f:
+        json.dump(comments, f)
+
+# 사진 업로드
 uploaded_file = st.file_uploader("환경 활동 사진을 업로드하세요", type=["jpg", "jpeg", "png"])
 
 if uploaded_file:
@@ -58,6 +80,16 @@ if uploaded_file:
     
     st.success("사진이 성공적으로 업로드되었습니다!")
     st.image(Image.open(file_path), caption="업로드한 사진", use_column_width=True)
+    
+    # 댓글 입력
+    comment = st.text_area("이 사진에 대해 댓글을 남겨주세요:")
+    
+    if st.button("댓글 달기"):
+        if comment:
+            save_comment(uploaded_file.name, comment)
+            st.success("댓글이 성공적으로 추가되었습니다!")
+        else:
+            st.error("댓글을 작성해주세요.")
 
 # 업로드된 사진 갤러리
 st.subheader("친구들의 환경 활동 🌍")
@@ -67,5 +99,23 @@ if uploaded_files:
     for file_name in uploaded_files:
         file_path = os.path.join(UPLOAD_FOLDER, file_name)
         st.image(Image.open(file_path), caption=file_name, use_column_width=True)
+        
+        # 댓글 불러오기
+        if os.path.exists(COMMENTS_FILE):
+            with open(COMMENTS_FILE, "r") as f:
+                comments = json.load(f)
+            
+            if file_name in comments:
+                st.write(f"댓글:")
+                for comment in comments[file_name]:
+                    st.write(f"- {comment}")
+        else:
+            st.write("댓글이 아직 없습니다.")
 else:
     st.write("아직 업로드된 사진이 없어요. 첫 번째로 공유해보세요!")
+
+# 미션 달성 배지
+if badge:
+    st.subheader("축하합니다! 미션 달성 배지 🎉")
+    badge_img = Image.open(badge)
+    st.image(badge_img, caption="미션 달성 배지", use_column_width=True)
