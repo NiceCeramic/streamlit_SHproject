@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import koreanize_matplotlib
 
 # Load data
 data_path = 'age2411.csv'  # Ensure this file is in the same directory or update the path
@@ -25,9 +26,17 @@ def main():
             # Prepare data for plotting
             age_columns = [col for col in filtered_data.columns if '2024년11월_계_' in col and '총인구수' not in col]
             age_data = filtered_data.iloc[0][age_columns]
-            
+
+            # Convert to numeric if necessary
+            age_data = pd.to_numeric(age_data, errors='coerce')
+
             # Extract age range
             age_labels = [col.replace('2024년11월_계_', '').replace('세', '') for col in age_columns]
+
+            # Debugging output for validation
+            st.write("### Debugging Info")
+            st.write("Age Data:", age_data)
+            st.write("Age Labels:", age_labels)
 
             # Plot
             plt.figure(figsize=(10, 6))
@@ -42,9 +51,11 @@ def main():
             st.pyplot(plt)
 
             # Add additional insights
+            max_age_label = age_labels[age_data.idxmax()] if not age_data.isnull().all() else "데이터 없음"
+            min_age_label = age_labels[age_data.idxmin()] if not age_data.isnull().all() else "데이터 없음"
             st.write(f"### {region}의 인구 구조")
-            st.write("- 가장 많은 연령대: ", age_labels[age_data.idxmax()])
-            st.write("- 가장 적은 연령대: ", age_labels[age_data.idxmin()])
+            st.write("- 가장 많은 연령대: ", max_age_label)
+            st.write("- 가장 적은 연령대: ", min_age_label)
         else:
             st.error("입력한 지역명을 찾을 수 없습니다. 다시 시도해주세요.")
 
