@@ -142,22 +142,43 @@ if badge:
     badge_img = Image.open(badge)
     st.image(badge_img, caption="미션 달성 배지", use_column_width=True)
 
-# 환경 관련 도서 추천
+# 환경 관련 도서 추천 (탭 형식)
 st.subheader("추천 도서 📚")
-books = [
-    {"title": "지구의 미래", "author": "김홍석", "description": "지구 환경 문제와 우리가 할 수 있는 일에 대해 알려주는 책입니다.", "image": "book1.jpg"},
-    {"title": "플라스틱 없는 세상", "author": "앤드류 미첼", "description": "플라스틱 쓰레기 문제와 해결 방안을 제시하는 책입니다.", "image": "book2.jpg"},
-    {"title": "기후 변화의 시대", "author": "데이비드 킹", "description": "기후 변화가 인간 사회와 지구에 미치는 영향을 다룬 책입니다.", "image": "book3.jpg"},
-    {"title": "지속 가능한 세상", "author": "마이클 그리핀", "description": "지속 가능한 삶을 위한 다양한 실천을 소개하는 책입니다.", "image": "book4.jpg"}
-]
+book_tabs = ["지구의 미래", "플라스틱 없는 세상", "기후 변화의 시대", "지속 가능한 세상"]
 
-for book in books:
-    st.subheader(book["title"])
-    st.write(f"**저자**: {book['author']}")
-    st.write(f"**책 설명**: {book['description']}")
+# 탭 선택
+book_selection = st.radio("탭을 선택하세요:", book_tabs)
+
+# 각 도서의 내용
+if book_selection == "지구의 미래":
+    st.write("**저자**: 김홍석")
+    st.write("**책 설명**: 지구 환경 문제와 우리가 할 수 있는 일에 대해 알려주는 책입니다.")
     try:
-        book_image = Image.open(book["image"])
-        st.image(book_image, caption=book["title"], use_column_width=True)
+        book_image = Image.open("book1.jpg")
+        st.image(book_image, caption="지구의 미래", use_column_width=True)
     except:
-        st.write("이미지를 불러올 수 없습니다. 다른 방법으로 확인해보세요.")
-    st.write("---")
+        st.write("이미지를 불러올 수 없습니다.")
+elif book_selection == "플라스틱 없는 세상":
+    st.write("**저자**: 앤드류 미첼")
+    st.write("**책 설명**: 플라스틱 쓰레기 문제와 해결 방안을 제시하는 책입니다.")
+    try:
+        book_image = Image.open("book2.jpg")
+        st.image(book_image, caption="플라스틱 없는 세상", use_column_width=True)
+    except:
+        st.write("이미지를 불러올 수 없습니다.")
+elif book_selection == "기후 변화의 시대":
+    st.write("**저자**: 데이비드 킹")
+    st.write("**책 설명**: 기후 변화가 인간 사회와 지구에 미치는 영향을 다룬 책입니다.")
+    try:
+        book_image = Image.open("book3.jpg")
+        st.image(book_image, caption="기후 변화의 시대", use_column_width=True)
+    except:
+        st.write("이미지를 불러올 수 없습니다.")
+elif book_selection == "지속 가능한 세상":
+    st.write("**저자**: 마이클 그리핀")
+    st.write("**책 설명**: 지속 가능한 삶을 위한 다양한 실천을 소개하는 책입니다.")
+    try:
+        book_image = Image.open("book4.jpg")
+        st.image(book_image, caption="지속 가능한 세상", use_column_width=True)
+    except:
+        st.write("이미지를 불러올 수 없습니다.")
