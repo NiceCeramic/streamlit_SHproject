@@ -30,6 +30,11 @@ def main():
             # Convert to numeric if necessary
             age_data = pd.to_numeric(age_data, errors='coerce')
 
+            # Check if age_data is valid
+            if age_data.isnull().all():
+                st.error("선택한 지역에 대한 유효한 연령 데이터가 없습니다.")
+                return
+
             # Extract age range
             age_labels = [col.replace('2024년11월_계_', '').replace('세', '') for col in age_columns]
 
@@ -51,8 +56,8 @@ def main():
             st.pyplot(plt)
 
             # Add additional insights
-            max_age_label = age_labels[age_data.idxmax()] if not age_data.isnull().all() else "데이터 없음"
-            min_age_label = age_labels[age_data.idxmin()] if not age_data.isnull().all() else "데이터 없음"
+            max_age_label = age_labels[age_data.idxmax()]
+            min_age_label = age_labels[age_data.idxmin()]
             st.write(f"### {region}의 인구 구조")
             st.write("- 가장 많은 연령대: ", max_age_label)
             st.write("- 가장 적은 연령대: ", min_age_label)
